@@ -24,8 +24,8 @@ function App() {
   return (
     <MainWrapper>
       <BallWrapper>
-        {nums.map((e) => (
-          <LottoBall number={e} />
+        {nums.map((e, i) => (
+          <LottoBall key={i} number={e} />
         ))}
       </BallWrapper>
       <BtnWrapper>

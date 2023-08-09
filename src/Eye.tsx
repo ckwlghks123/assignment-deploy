@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import styled from "styled-components";
 
 const Eyes = styled.div`
@@ -26,10 +26,21 @@ const Ball = styled.div`
 `;
 
 function App() {
-  const leftEye = useRef();
-  const rightEye = useRef();
+  const leftEye = useRef<HTMLDivElement>(null);
+  const rightEye = useRef<HTMLDivElement>(null);
 
-  const animate = (element, startTime, duration, size) => {
+  const animate = (
+    elementRef: RefObject<HTMLDivElement>,
+    startTime: number,
+    duration: number,
+    size: number
+  ) => {
+    const element = elementRef.current;
+    if (!element) {
+      // ref.current가 없는 경우 종료합니다.
+      return;
+    }
+
     const currentTime = (new Date().getTime() - startTime) % duration;
     const degrees = (360 * currentTime) / duration;
     const radians = (degrees * Math.PI) / 180;
@@ -37,19 +48,17 @@ function App() {
     const y = size * Math.sin(radians) - element.clientHeight / 2 + 15;
 
     element.style.transform = `translate(${x}px, ${y}px)`;
-    requestAnimationFrame(() => animate(element, startTime, duration, size));
+    requestAnimationFrame(() => animate(elementRef, startTime, duration, size));
   };
 
   useEffect(() => {
-    const element = leftEye.current;
-    const element2 = rightEye.current;
     const startTime = new Date().getTime();
     const duration = 2000; // 애니메이션 지속 시간 (ms)
     const size = (160 - 40) / 2; // 원 둘레의 반지름 (원의 크기에서 Ball의 크기를 뺀 값을 반으로 나눔)
 
     requestAnimationFrame(() => {
-      animate(element, startTime, duration, size);
-      animate(element2, startTime, duration, size);
+      animate(leftEye, startTime, duration, size);
+      animate(rightEye, startTime, duration, size);
     });
   }, []);
 
